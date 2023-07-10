@@ -60,9 +60,17 @@ class Parser
         if (stripos($ofxHeader, '<?xml') === 0) {
             $ofxXml = $ofxSgml;
         } else {
-            $ofxSgml = $this->conditionallyAddNewlines($ofxSgml);
-            $ofxXml = $this->convertSgmlToXml($ofxSgml);
+            $ofxXml = $this->convertSgmlToXml($this->conditionallyAddNewlines($ofxSgml));
         }
+
+        try {
+            $xml = $this->xmlLoadString($ofxXml);
+        }
+        catch (\Exception $e)
+        {
+            $ofxXml = $this->convertSgmlToXml($ofxSgml);
+            $xml = $this->xmlLoadString($ofxXml);
+        }        
 
         $xml = $this->xmlLoadString($ofxXml);
 
